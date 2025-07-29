@@ -1,8 +1,7 @@
 import { Router } from "express";
-const router = Router();
+import { adminModel } from "../db.js";
 
-function adminRouter() {
+const adminRouter = Router();
 
-}
 
 export default adminRouter;

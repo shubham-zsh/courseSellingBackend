@@ -1,32 +1,34 @@
 import mongoose, { Schema } from "mongoose";
-const ObjectId =  mongoose.Types.ObjectId;
+import dotenv from "dotenv";
+dotenv.config();
+
+const ObjectId = mongoose.Types.ObjectId;
 
 const connectDB = async () => {
-
     try {
-        await mongoose.connect("mongodb+srv://shubham911db:mydbshubham911@cluster0.viasm.mongodb.net/course-app");
-        console.log("mongo connected")
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log("MongoDB connected");
     } catch (err) {
-        console.error("mongo connection failed...", err);
+        console.error("MongoDB connection error:", err);
         process.exit(1);
     }
 };
 
 const userSchema = new Schema({
-    email: {type: String, unique: true},
+    email: { type: String, unique: true },
     password: String,
     firstName: String,
     lastName: String,
 });
 
 const adminSchema = new Schema({
-    email: {type: String, unique: true},
+    email: { type: String, unique: true },
     password: String,
     firstName: String,
     lastName: String,
 });
 
-const courseSchema =  new Schema({
+const courseSchema = new Schema({
     title: String,
     description: String,
     price: String,
@@ -45,5 +47,5 @@ const courseModel = mongoose.model("course", courseSchema);
 const purchaseModel = mongoose.model("purchase", purchaseSchema);
 
 export default connectDB;
-export { userModel, adminModel, courseModel, purchaseModel}
+export { userModel, adminModel, courseModel, purchaseModel }
 
