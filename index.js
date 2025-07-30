@@ -17,10 +17,10 @@ app.use("/api/v1/course", courseRouter);
 
 
 const startServer = async () => {
-    await  connectDB();
-app.listen(PORT, () => {
-    console.log("express started");
-});
+    await connectDB();
+    app.listen(PORT, () => {
+        console.log("express started");
+    });
 };
 
 startServer();
