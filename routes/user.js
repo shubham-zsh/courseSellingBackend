@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { userModel } from "../db.js";
-import jwt from "jsonwebtoken";
+import jwt from "jsonailwebtoken";
 import bcrypt from 'bcrypt';
 import { userSaltRounds, jwtUserSecret } from '../config.js'
 import z from "zod";
@@ -9,14 +9,14 @@ import z from "zod";
 const userRouter = Router();
 
 const signupBody = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(6),
     firstName: z.string().min(3),
     lastName: z.string().min(3)
 });
 
 const signIn = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(6)
 });
 

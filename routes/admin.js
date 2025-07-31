@@ -8,14 +8,14 @@ import { adminSaltRounds, jwtAdminSecret } from '../config.js';
 const adminRouter = Router();
 
 const signupBody = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(6),
     firstName: z.string().min(3),
     lastName: z.string().min(3)
 });
 
 const signinBody = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(6)
 });
 
