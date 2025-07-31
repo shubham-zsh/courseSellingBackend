@@ -1,13 +1,12 @@
 import mongoose, { Schema } from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
+import { mongoUri } from "./config.js";
 
 const ObjectId = mongoose.Types.ObjectId;
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("MongoDB connected", process.env.MONGO_URI);
+        await mongoose.connect(mongoUri);
+        console.log("MongoDB connected");
     } catch (err) {
         console.error("MongoDB connection error:", err);
         process.exit(1);

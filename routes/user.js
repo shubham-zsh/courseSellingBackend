@@ -2,11 +2,23 @@ import { Router } from 'express';
 import { userModel } from "../db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
-import  dotenv from "dotenv";
-dotenv.config();
+import { userSaltRounds, jwtUserSecret } from '../config.js'
+import z from "zod";
 
 
 const userRouter = Router();
+
+const signupBody = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    firstName: z.string().min(3),
+    lastName: z.string().min(3)
+});
+
+const signIn = z.object({
+    email: z.string().email(),
+    password: z.string().min(6)
+});
 
 userRouter.post("/signup", async function (req, res) {
     const { email, password, firstName, lastName } = req.body;
@@ -16,7 +28,7 @@ userRouter.post("/signup", async function (req, res) {
         if (existingUSer) {
             return res.status(400).json({ msg: "User already exists..." })
         }
-        const hashedPass = await bcrypt.hash(password, Number(process.env.saltRound || 10));
+        const hashedPass = await bcrypt.hash(password, Number(userSaltRounds || 10));
 
         await userModel.create({
             email: email,
@@ -43,21 +55,48 @@ userRouter.post("/signin", async function (req, res) {
             return res.status(404).json({ msg: "User not found..." });
         }
 
-        const match = bcrypt.compare(password, user.password)
+        const match = await bcrypt.compare(password, user.password)
         if (!match) {
             return res.status(401).json({ msg: "wrong password" });
         }
         const token = jwt.sign({
-            id: user.id
-        }, process.env.JWT)
-        res.json({
-            token: token
-        })
+            id: user._id
+        }, jwtUserSecret)
+
+        res.status(200).json({
+            msg: "Signin successful",
+            token: token,
+        });
     } catch (err) {
         res.status(401).json({ msg: "something went wrong ", err })
     }
 
 
 });
+
+userRouter.get("/purchase", async function (req, res) {
+
+    const userId = req.userId;
+
+    try {
+
+        const purcheses = await findOne({ userId });
+
+        if(!purcheses) {
+            res.json({ msg: "No courses available"});
+        };
+
+        let purchasesCourse = [];
+
+        for( var i=0; i<purcheses.lenght; i++) {
+            purchasesCourse.push()
+        }
+
+
+    } catch (err) {
+
+    }
+
+})
 
 export default userRouter;
