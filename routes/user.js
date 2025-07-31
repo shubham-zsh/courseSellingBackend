@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { userModel } from "../db.js";
-import jwt from "jsonailwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import { userSaltRounds, jwtUserSecret } from '../config.js'
 import z from "zod";
@@ -36,12 +36,11 @@ userRouter.post("/signup", async function (req, res) {
             firstName: firstName,
             lastName: lastName
         });
-        res.status(201).json({
+        return res.status(201).json({
             msg: "signup successful..."
         })
     } catch (err) {
-        console.error(err);
-        res.status(505).json({ msg: "something went wrong..." });
+        return res.status(505).json({ msg: "something went wrong..." });
     }
 });
 
@@ -63,12 +62,12 @@ userRouter.post("/signin", async function (req, res) {
             id: user._id
         }, jwtUserSecret)
 
-        res.status(200).json({
+        return res.status(200).json({
             msg: "Signin successful",
             token: token,
         });
     } catch (err) {
-        res.status(401).json({ msg: "something went wrong ", err })
+        return res.status(401).json({ msg: "something went wrong ", err })
     }
 
 
@@ -82,13 +81,13 @@ userRouter.get("/purchase", async function (req, res) {
 
         const purcheses = await findOne({ userId });
 
-        if(!purcheses) {
-            res.json({ msg: "No courses available"});
+        if (!purcheses) {
+            return res.json({ msg: "No courses available" });
         };
 
         let purchasesCourse = [];
 
-        for( var i=0; i<purcheses.lenght; i++) {
+        for (var i = 0; i < purcheses.lenght; i++) {
             purchasesCourse.push()
         }
 

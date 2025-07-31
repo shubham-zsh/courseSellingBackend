@@ -44,11 +44,10 @@ adminRouter.post("/signup", async function (req, res) {
             firstName,
             lastName
         })
-        res.status(201).json({ msg: "signup successful" })
+        return res.status(201).json({ msg: "signup successful" })
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: "Internal server error" });
+        return res.status(500).json({ msg: "Internal server error" });
     }
 })
 
@@ -77,12 +76,12 @@ adminRouter.post("/signin", async function (req, res) {
             id: user._id
         }, jwtAdminSecret)
 
-        res.status(200).json({
+        return res.status(200).json({
             msg: "Signin successful",
             token: token,
         });
     } catch (err) {
-        res.status(401).json({ msg: "something went wrong ", err })
+        return res.status(401).json({ msg: "something went wrong ", err })
     }
 
 
