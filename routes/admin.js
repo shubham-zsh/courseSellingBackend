@@ -4,6 +4,7 @@ import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { adminSaltRounds, jwtAdminSecret } from '../config.js';
+import { userMiddlerware } from '../middleware/admin.js';
 
 const adminRouter = Router();
 
@@ -83,8 +84,34 @@ adminRouter.post("/signin", async function (req, res) {
     } catch (err) {
         return res.status(401).json({ msg: "something went wrong ", err })
     }
-
-
 });
+
+adminRouter.post("/purchase", userMiddlerware, async function (req, res) {
+
+    const adminId = req.userId;
+
+    try {
+        const parsedBody = courseBody.safeParse(req.body);
+
+        if (!parsedBody.success) {
+            return res.status(401).json("wrong course details");
+        }
+
+        const { title, description, price, imageUrl } = parsedBody.data;
+
+        const newCourse = await courseModel.create({
+            title, description, price, imageUrl, creatorId: adminId
+        });
+
+        return res.status(200).json({
+            msg: "course added successfully",
+            courseId: newCourse._id
+        })
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({ msg: "something went wrong" })
+    }
+
+})
 
 export default adminRouter;
