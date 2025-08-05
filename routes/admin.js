@@ -86,7 +86,7 @@ adminRouter.post("/signin", async function (req, res) {
     }
 });
 
-adminRouter.post("/purchase", userMiddlerware, async function (req, res) {
+adminRouter.post("/create", userMiddlerware, async function (req, res) {
 
     const adminId = req.userId;
 
@@ -106,10 +106,10 @@ adminRouter.post("/purchase", userMiddlerware, async function (req, res) {
         return res.status(200).json({
             msg: "course added successfully",
             courseId: newCourse._id
-        })
+        });
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ msg: "something went wrong" })
+        return res.status(400).json({ msg: "something went wrong" });
     }
 
 })
