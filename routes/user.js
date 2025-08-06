@@ -21,10 +21,18 @@ const signIn = z.object({
 });
 
 userRouter.post("/signup", async function (req, res) {
-    const { email, password, firstName, lastName } = req.body;
+
+    const parsedBody = signupBody.safeParse(req.body);
 
     try {
+        if (!parsedBody.success) {
+            return res.status(401).json({ msg: "invalid credentials" })
+        }
+
+        const { email, password, firstName, lastName } = parsedBody.data;
+
         const existingUSer = await userModel.findOne({ email });
+
         if (existingUSer) {
             return res.status(400).json({ msg: "User already exists..." })
         }
@@ -36,6 +44,7 @@ userRouter.post("/signup", async function (req, res) {
             firstName: firstName,
             lastName: lastName
         });
+
         return res.status(201).json({
             msg: "signup successful..."
         })
