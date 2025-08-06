@@ -169,4 +169,26 @@ adminRouter.put("/update", adminMiddleware, async (req, res) => {
     }
 })
 
+adminRouter.get("/courses/bulk", adminMiddleware, async (req, res) => {
+
+    const creatorId = req.adminId;
+
+    try {
+        const courses = [];
+
+        courses = await courseModel.find({
+            creatorId
+        })
+
+        res.json({
+            msg: "courses fecthed",
+            courses
+        })
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(401).json({ msg: "something went wrong" })
+    }
+})
+
 export default adminRouter;
