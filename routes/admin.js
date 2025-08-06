@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { adminModel } from "../db.js";
+import { adminModel, courseModel } from "../db.js";
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { adminSaltRounds, jwtAdminSecret } from '../config.js';
-import { userMiddlerware } from '../middleware/admin.js';
+import { adminMiddleware } from '../middleware/admin.js';
 
 const adminRouter = Router();
 
@@ -18,6 +18,20 @@ const signupBody = z.object({
 const signinBody = z.object({
     email: z.email(),
     password: z.string().min(6)
+});
+
+const courseBody = z.object({
+    title: z.string(),
+    description: z.string(),
+    price: z.number(),
+    imageUrl: z.string(),
+});
+
+const updateCourseBody = z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    price: z.number().optional(),
+    imageUrl: z.string().optional()
 });
 
 adminRouter.post("/signup", async function (req, res) {
@@ -86,9 +100,9 @@ adminRouter.post("/signin", async function (req, res) {
     }
 });
 
-adminRouter.post("/create", userMiddlerware, async function (req, res) {
+adminRouter.post("/create", adminMiddleware, async function (req, res) {
 
-    const adminId = req.userId;
+    const adminId = req.adminId;
 
     try {
         const parsedBody = courseBody.safeParse(req.body);
@@ -112,6 +126,47 @@ adminRouter.post("/create", userMiddlerware, async function (req, res) {
         return res.status(400).json({ msg: "something went wrong" });
     }
 
+})
+
+adminRouter.put("/update", adminMiddleware, async (req, res) => {
+
+    const adminId = req.adminId;
+
+    try {
+        const parsedBody = updateCourseBody.safeParse(req.body);
+
+        if (!parsedBody.success) {
+            return res.status(401).json({ msg: "invalid update information" });
+        }
+
+        const courseId = req.body.courseId;
+        const updateData = parsedBody.data;
+
+        if (!courseId) {
+            return res.status(400).json({ msg: "courseId missing in request" });
+        }
+
+        const updatedCourse = await courseModel.updateOne({
+            _id: courseId,
+            creatorId: adminId
+        }, {
+            $set: updateData
+        })
+
+        if (updatedCourse.matchedCount === 0) {
+            return res.status(404).json({ msg: "Course not found or not owned by admin" });
+        }
+
+        if (updatedCourse.modifiedCount == 0) {
+            return res.status(401).json({ msg: "error updating course" });
+        }
+
+        res.status(201).json({ msg: "course updated successfully" })
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(401).json({ msg: "something went wrong" })
+    }
 })
 
 export default adminRouter;
