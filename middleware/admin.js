@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { jwtAdminSecret } from "../config";
+import { jwtAdminSecret } from "../config.js";
 
 function adminMiddleware(req, res, next) {
 

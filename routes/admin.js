@@ -3,8 +3,8 @@ import { adminModel, courseModel } from "../db.js";
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { adminSaltRounds, jwtAdminSecret } from '../config.js';
-import { adminMiddleware } from '../middleware/admin.js';
+import { adminSaltRounds, jwtAdminSecret } from "../config.js";
+import adminMiddleware from '../middleware/admin.js';
 
 const adminRouter = Router();
 
@@ -174,9 +174,8 @@ adminRouter.get("/courses/bulk", adminMiddleware, async (req, res) => {
     const creatorId = req.adminId;
 
     try {
-        const courses = [];
 
-        courses = await courseModel.find({
+        const courses = await courseModel.find({
             creatorId
         })
 
