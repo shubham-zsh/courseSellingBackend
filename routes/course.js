@@ -4,6 +4,11 @@ import { z } from 'zod';
 import userMiddlerware from '../middleware/user.js';
 const courseRouter = Router();
 
+const purchaseBody = z.object({
+    courseId: z.string().length(24),
+    amountPaid: z.number()
+});
+
 courseRouter.get("/all-courses", async (req, res) => {
 
     try {
@@ -22,35 +27,50 @@ courseRouter.get("/all-courses", async (req, res) => {
 courseRouter.post("/purchase", userMiddlerware, async (req, res) => {
 
     const userId = req.userId;
-    const courseId = req.body.courseId;
+    const { courseId, amountPaid } = req.body;
 
     try {
 
-        if(userId.price < courseId.price || userId.price > courseId.price) {
-            return res.status(401).json({msg: "incorrect amount"})
+        const parsedBody = purchaseBody.safeParse(req.body);
+        if (!parsedBody.success) {
+            return res.status(400).json({ msg: "Invalid input" });
+        }
+
+        const course = await courseModel.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ msg: "course not found" });
+        }
+
+        if (amountPaid !== course.price) {
+            return res.status(400).json({ msg: "incorrect amount" })
+        }
+
+        const alreadyPurchased = await purchaseModel.findOne({ courseId, userId });
+        if (alreadyPurchased) {
+            return res.status(409).json({ msg: "course already purchased" });
         }
 
         const purchased = await purchaseModel.create({
             courseId, userId
         });
 
-        if (!purchaseModel) {
-            return res.status(401).json({ msg: "unable to purchase course" });
+        if (!purchased) {
+            return res.status(500).json({ msg: "unable to purchase course" });
         }
 
-        res.send({
+        res.status(201).send({
             msg: "course purchased successfully",
-            purchased
+            purchased, course
         })
     }
     catch (err) {
         console.error(err);
-        res.status(401).json({ msg: "something went wrong" });
+        res.status(500).json({ msg: "something went wrong" });
     }
 });
 
 courseRouter.get("/course-info", async (req, res) => {
-    
+
 })
 
 export default courseRouter;
