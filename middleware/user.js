@@ -18,7 +18,7 @@ function userMiddlerware(req, res, next) {
     }
     catch (err) {
         console.error(err);
-        return res.status(401).json({msg: "invalid token"});
+        return res.status(401).json({msg: "You need to log in"});
     }
 }
 

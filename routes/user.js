@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { userModel } from "../db.js";
+import { userModel, purchaseModel, courseModel } from "../db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import { userSaltRounds, jwtUserSecret } from '../config.js'
@@ -82,27 +82,33 @@ userRouter.post("/signin", async function (req, res) {
 
 });
 
-userRouter.get("/purchase", async function (req, res) {
+userRouter.get("/purchased", async function (req, res) {
 
     const userId = req.userId;
 
     try {
 
-        const purcheses = await findOne({ userId });
+        const purchases = await purchaseModel.find({ userId });
 
-        if (!purcheses) {
-            return res.json({ msg: "No courses available" });
+        if (purchases.length == 0) {
+            return res.status(404).json({ msg: "No courses available" });
         };
 
-        let purchasesCourse = [];
+        let purchasedCourseIds = [];
 
-        for (var i = 0; i < purcheses.lenght; i++) {
-            purchasesCourse.push()
+        for (var i = 0; i < purchases.length; i++) {
+            purchasedCourseIds.push(purchases[i].courseId)
         }
 
+        const coursesData = await courseModel.find({
+            _id: { $in: purchasedCourseIds }
+        }).select("-__v");
+
+        res.status(200).json({ courses: coursesData });
 
     } catch (err) {
-
+        console.error(err);
+        res.status(500).json({ msg: "Internal Server Error" });
     }
 
 })

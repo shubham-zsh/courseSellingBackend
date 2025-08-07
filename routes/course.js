@@ -69,8 +69,26 @@ courseRouter.post("/purchase", userMiddlerware, async (req, res) => {
     }
 });
 
-courseRouter.get("/course-info", async (req, res) => {
+courseRouter.get("/course-info/:courseId", async (req, res) => {
 
+    try {
+        const courseId = req.params.courseId;
+
+        const courseInfo = await courseModel.findById(courseId).select("-__v");
+
+        if (!courseInfo) {
+            return res.status(404).json({ msg: "Course not found" });
+        }
+
+        res.status(200).json({
+            msg: "Course preview fetched successfully",
+            course,
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: "Something went wrong while fetching course preview" });
+    }
 })
 
 export default courseRouter;
