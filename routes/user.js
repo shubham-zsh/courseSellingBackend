@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import { userSaltRounds, jwtUserSecret } from '../config.js'
 import z from "zod";
+import { userMiddleware } from "../middleware/user.js"
 
 
 const userRouter = Router();
@@ -15,7 +16,7 @@ const signupBody = z.object({
     lastName: z.string().min(3)
 });
 
-const signIn = z.object({
+const signinBody = z.object({
     email: z.email(),
     password: z.string().min(6)
 });
@@ -55,7 +56,13 @@ userRouter.post("/signup", async function (req, res) {
 
 userRouter.post("/signin", async function (req, res) {
 
-    const { email, password } = req.body;
+    const parsedBody = signinBody.safeParse(req.body);
+
+    if (!parsedBody) {
+        return res.status(400).json({ msg: "invalid input" })
+    }
+
+    const { email, password } = parsedBody.data;
 
     try {
         const user = await userModel.findOne({ email });
@@ -82,7 +89,7 @@ userRouter.post("/signin", async function (req, res) {
 
 });
 
-userRouter.get("/purchased", async function (req, res) {
+userRouter.get("/purchased", userMiddleware, async function (req, res) {
 
     const userId = req.userId;
 

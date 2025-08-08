@@ -82,7 +82,7 @@ courseRouter.get("/course-info/:courseId", async (req, res) => {
 
         res.status(200).json({
             msg: "Course preview fetched successfully",
-            course,
+            courseInfo,
         });
 
     } catch (err) {
