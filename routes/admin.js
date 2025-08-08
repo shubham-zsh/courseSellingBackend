@@ -161,7 +161,7 @@ adminRouter.put("/update", adminMiddleware, async (req, res) => {
             return res.status(401).json({ msg: "error updating course" });
         }
 
-        res.status(201).json({ msg: "course updated successfully" })
+        return res.status(201).json({ msg: "course updated successfully" })
     }
     catch (err) {
         console.error(err);
@@ -179,7 +179,7 @@ adminRouter.get("/courses/bulk", adminMiddleware, async (req, res) => {
             creatorId
         })
 
-        res.json({
+        return res.json({
             msg: "courses fecthed",
             courses
         })

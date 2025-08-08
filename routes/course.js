@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { courseModel, purchaseModel } from '../db.js';
 import { z } from 'zod';
-import userMiddlerware from '../middleware/user.js';
+import userMiddleware from '../middleware/user.js';
 const courseRouter = Router();
 
 const purchaseBody = z.object({
@@ -24,7 +24,7 @@ courseRouter.get("/all-courses", async (req, res) => {
     }
 });
 
-courseRouter.post("/purchase", userMiddlerware, async (req, res) => {
+courseRouter.post("/purchase", userMiddleware, async (req, res) => {
 
     const userId = req.userId;
     const { courseId, amountPaid } = req.body;
@@ -58,7 +58,7 @@ courseRouter.post("/purchase", userMiddlerware, async (req, res) => {
             return res.status(500).json({ msg: "unable to purchase course" });
         }
 
-        res.status(201).send({
+        return res.status(201).send({
             msg: "course purchased successfully",
             purchased, course
         })
@@ -80,7 +80,7 @@ courseRouter.get("/course-info/:courseId", async (req, res) => {
             return res.status(404).json({ msg: "Course not found" });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             msg: "Course preview fetched successfully",
             courseInfo,
         });

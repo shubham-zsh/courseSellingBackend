@@ -4,8 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import { userSaltRounds, jwtUserSecret } from '../config.js'
 import z from "zod";
-import { userMiddleware } from "../middleware/user.js"
-
+import userMiddleware from '../middleware/user.js';
 
 const userRouter = Router();
 

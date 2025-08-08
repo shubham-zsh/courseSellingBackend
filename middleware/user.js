@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { jwtUserSecret } from "../config";
+import { jwtUserSecret } from "../config.js";
 
-function userMiddlerware(req, res, next) {
+function userMiddleware(req, res, next) {
 
     const authHeader = req.body.token;
 
@@ -22,4 +22,4 @@ function userMiddlerware(req, res, next) {
     }
 }
 
-export default userMiddlerware;
+export default userMiddleware;
