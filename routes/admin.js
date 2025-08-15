@@ -113,6 +113,17 @@ adminRouter.post("/create", adminMiddleware, async function (req, res) {
 
         const { title, description, price, imageUrl } = parsedBody.data;
 
+        const existing = await courseModel.findOne({
+            title,
+            description,
+            price,
+            imageUrl,
+            creatorId: adminId
+        });
+        if (existing) {
+            return res.status(409).json({ msg: "Identical course already exists" });
+        }
+
         const newCourse = await courseModel.create({
             title, description, price, imageUrl, creatorId: adminId
         });
